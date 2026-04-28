@@ -1,0 +1,61 @@
+name: DB Liquibase CI
+
+on:
+  pull_request:
+    branches: [ main, master, develop ]
+  push:
+    branches: [ main, master, develop ]
+
+jobs:
+  liquibase-validate-and-update:
+    name: Validar y compilar cambios Liquibase
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_DB: gimnasio_db
+          POSTGRES_USER: gimnasio_user
+          POSTGRES_PASSWORD: gimnasio_pass
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd="pg_isready -U gimnasio_user -d gimnasio_db"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=10
+    steps:
+      - name: Descargar código
+        uses: actions/checkout@v4
+      - name: Ejecutar validate
+        uses: liquibase-github-actions/validate@v4.31.0
+        with:
+          changelogFile: liquibase/changelog-master.xml
+          url: jdbc:postgresql://postgres:5432/gimnasio_db
+          username: gimnasio_user
+          password: gimnasio_pass
+      - name: Probar update contra PostgreSQL temporal
+        uses: liquibase-github-actions/update@v4.31.0
+        with:
+          changelogFile: liquibase/changelog-master.xml
+          url: jdbc:postgresql://postgres:5432/gimnasio_db
+          username: gimnasio_user
+          password: gimnasio_pass
+
+  verify-sql-files:
+    name: Verificar estructura y archivos SQL
+    runs-on: ubuntu-latest
+    steps:
+      - name: Descargar código
+        uses: actions/checkout@v4
+      - name: Revisar carpetas obligatorias
+        run: |
+          test -d 01_tables
+          test -d 09_inserts
+          test -d 11_rollbacks
+          test -f liquibase/changelog-master.xml
+      - name: Revisar que existan archivos SQL principales
+        run: |
+          test -s 01_tables/001_create_tables.sql
+          test -s 09_inserts/001_seed_data.sql
+          test -s 11_rollbacks/002_drop_tables.sql

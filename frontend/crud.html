@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>FitAdmin | CRUD Gimnasio</title>
+  <link rel="stylesheet" href="assets/css/styles.css" />
+  <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+</head>
+<body class="app-page">
+  <nav class="nav">
+    <a class="brand" href="index.html"><span class="brand-icon">🏋️</span><span>FitAdmin</span></a>
+    <div class="nav-links">
+      <a href="index.html">Landing</a>
+      <a href="http://localhost:8080/docs" target="_blank" rel="noreferrer">Swagger</a>
+    </div>
+  </nav>
+
+  <header class="app-hero">
+    <div>
+      <p class="eyebrow">Panel administrativo</p>
+      <h1>CRUD visual del gimnasio</h1>
+      <p>Administra entrenadores, planes, miembros, clases y reservas desde una interfaz conectada al backend PHP.</p>
+      <div class="api-pill">API base: <code id="apiLabel"></code></div>
+    </div>
+    <div class="hero-metrics">
+      <div><strong>5</strong><span>Entidades</span></div>
+      <div><strong>30</strong><span>Endpoints</span></div>
+      <div><strong>100%</strong><span>CRUD</span></div>
+    </div>
+  </header>
+
+  <main class="app-shell">
+    <aside class="sidebar panel">
+      <h2>Modelo</h2>
+      <p class="muted">Selecciona una entidad para crear, editar, eliminar o consultar registros.</p>
+      <div id="tabs" class="tabs"></div>
+      <div id="relationHelp" class="relation-help"></div>
+    </aside>
+
+    <section class="workspace">
+      <form id="entityForm" class="panel form-panel"></form>
+
+      <section class="panel table-panel">
+        <div class="table-head">
+          <div>
+            <p class="eyebrow">Listado</p>
+            <h2 id="tableTitle">Registros</h2>
+          </div>
+          <input id="search" class="search" placeholder="Filtrar por texto o ID..." />
+        </div>
+        <div id="message" class="message" aria-live="polite"></div>
+        <div class="table-wrap">
+          <table>
+            <thead id="thead"></thead>
+            <tbody id="tbody"></tbody>
+          </table>
+        </div>
+      </section>
+    </section>
+  </main>
+
+  <script src="assets/js/app.js"></script>
+</body>
+</html>

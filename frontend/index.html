@@ -1,0 +1,89 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>FitAdmin | Proyecto Gimnasio</title>
+  <link rel="stylesheet" href="assets/css/styles.css" />
+</head>
+<body>
+  <nav class="nav nav-transparent">
+    <a class="brand" href="index.html"><span class="brand-icon">🏋️</span><span>FitAdmin</span></a>
+    <div class="nav-links">
+      <a href="crud.html">CRUD visual</a>
+      <a href="http://localhost:8080/docs" target="_blank" rel="noreferrer">Swagger</a>
+    </div>
+  </nav>
+
+  <header class="landing-hero">
+    <div class="hero-copy">
+      <p class="eyebrow">Proyecto full stack con Docker + Liquibase</p>
+      <h1>Administración moderna para un gimnasio</h1>
+      <p>Base de datos PostgreSQL, backend PHP con Swagger y frontend CRUD en HTML, CSS, JavaScript y Axios. Todo separado por repos y también disponible en versión completa.</p>
+      <div class="hero-actions">
+        <a class="btn btn-primary" href="crud.html">Abrir CRUD visual</a>
+        <a class="btn btn-outline" href="http://localhost:8080/docs" target="_blank" rel="noreferrer">Probar API en Swagger</a>
+      </div>
+    </div>
+    <div class="hero-card">
+      <div class="pulse"></div>
+      <h2>FitAdmin</h2>
+      <p>Control de entrenadores, membresías, clases y reservas.</p>
+      <div class="mini-grid">
+        <span>HIIT</span><span>Fuerza</span><span>Yoga</span><span>Reservas</span>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <section class="section">
+      <div class="section-title">
+        <p class="eyebrow">Arquitectura</p>
+        <h2>Los 3 repos del trabajo</h2>
+      </div>
+      <div class="cards">
+        <article class="card"><span class="card-icon">🗄️</span><h3>Repo DB</h3><p>PostgreSQL con Liquibase, Docker, datos iniciales, rollbacks y GitHub Actions para validar cambios.</p></article>
+        <article class="card"><span class="card-icon">⚙️</span><h3>Repo Backend</h3><p>API PHP con estructura por modelos, servicios, repositorios, controladores y documentación Swagger.</p></article>
+        <article class="card"><span class="card-icon">💻</span><h3>Repo Frontend</h3><p>Landing page y CRUD visual conectado al backend usando Axios.</p></article>
+      </div>
+    </section>
+
+    <section class="section split">
+      <div class="panel dark-panel">
+        <p class="eyebrow">Modelo de datos</p>
+        <h2>5 entidades</h2>
+        <ul class="feature-list">
+          <li><strong>Primarias:</strong> entrenadores y planes.</li>
+          <li><strong>Secundarias:</strong> miembros, clases y reservas.</li>
+          <li><strong>Relaciones:</strong> miembros depende de planes, clases depende de entrenadores, reservas depende de miembros y clases.</li>
+          <li><strong>Reglas:</strong> llaves foráneas, checks de estado, cupos y precios positivos.</li>
+        </ul>
+      </div>
+      <div class="panel steps-panel">
+        <p class="eyebrow">Cómo probar</p>
+        <h2>Comandos principales</h2>
+        <pre><code>docker compose up --build
+
+Frontend: http://localhost:3000
+Swagger:  http://localhost:8080/docs
+API:      http://localhost:8080/api</code></pre>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="panel timeline-panel">
+        <p class="eyebrow">GitHub Actions</p>
+        <h2>Validación antes del merge</h2>
+        <div class="timeline">
+          <div><strong>1</strong><span>Push o Pull Request</span></div>
+          <div><strong>2</strong><span>GitHub levanta PostgreSQL temporal</span></div>
+          <div><strong>3</strong><span>Liquibase valida y ejecuta update</span></div>
+          <div><strong>4</strong><span>Si falla, se bloquea el merge</span></div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer>FitAdmin · Proyecto de gimnasio con DB, backend y frontend</footer>
+</body>
+</html>

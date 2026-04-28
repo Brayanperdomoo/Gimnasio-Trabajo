@@ -1,0 +1,63 @@
+-- 2 entidades primarias: entrenadores, planes
+-- 3 entidades secundarias: miembros, clases, reservas
+CREATE TABLE IF NOT EXISTS entrenadores (
+    id SERIAL PRIMARY KEY,
+    nombre VARCHAR(120) NOT NULL,
+    especialidad VARCHAR(120) NOT NULL,
+    email VARCHAR(160) NOT NULL UNIQUE,
+    telefono VARCHAR(30),
+    activo BOOLEAN NOT NULL DEFAULT TRUE,
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE IF NOT EXISTS planes (
+    id SERIAL PRIMARY KEY,
+    nombre VARCHAR(100) NOT NULL UNIQUE,
+    descripcion TEXT,
+    precio_mensual NUMERIC(10,2) NOT NULL CHECK (precio_mensual >= 0),
+    duracion_dias INTEGER NOT NULL CHECK (duracion_dias > 0),
+    activo BOOLEAN NOT NULL DEFAULT TRUE,
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE IF NOT EXISTS miembros (
+    id SERIAL PRIMARY KEY,
+    plan_id INTEGER NOT NULL REFERENCES planes(id) ON UPDATE CASCADE ON DELETE RESTRICT,
+    nombre VARCHAR(120) NOT NULL,
+    email VARCHAR(160) NOT NULL UNIQUE,
+    telefono VARCHAR(30),
+    fecha_inscripcion DATE NOT NULL DEFAULT CURRENT_DATE,
+    estado VARCHAR(30) NOT NULL DEFAULT 'ACTIVO' CHECK (estado IN ('ACTIVO','INACTIVO','SUSPENDIDO')),
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE IF NOT EXISTS clases (
+    id SERIAL PRIMARY KEY,
+    entrenador_id INTEGER NOT NULL REFERENCES entrenadores(id) ON UPDATE CASCADE ON DELETE RESTRICT,
+    nombre VARCHAR(120) NOT NULL,
+    descripcion TEXT,
+    cupo_maximo INTEGER NOT NULL CHECK (cupo_maximo > 0),
+    horario TIMESTAMP NOT NULL,
+    activo BOOLEAN NOT NULL DEFAULT TRUE,
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE IF NOT EXISTS reservas (
+    id SERIAL PRIMARY KEY,
+    miembro_id INTEGER NOT NULL REFERENCES miembros(id) ON UPDATE CASCADE ON DELETE CASCADE,
+    clase_id INTEGER NOT NULL REFERENCES clases(id) ON UPDATE CASCADE ON DELETE RESTRICT,
+    fecha_reserva TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    estado VARCHAR(30) NOT NULL DEFAULT 'RESERVADA' CHECK (estado IN ('RESERVADA','ASISTIO','CANCELADA')),
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT uq_reserva_miembro_clase UNIQUE (miembro_id, clase_id)
+);
+
+CREATE INDEX IF NOT EXISTS idx_miembros_plan ON miembros(plan_id);
+CREATE INDEX IF NOT EXISTS idx_clases_entrenador ON clases(entrenador_id);
+CREATE INDEX IF NOT EXISTS idx_reservas_miembro ON reservas(miembro_id);
+CREATE INDEX IF NOT EXISTS idx_reservas_clase ON reservas(clase_id);
