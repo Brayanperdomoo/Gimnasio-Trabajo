@@ -1,56 +1,181 @@
 {
   "openapi": "3.0.3",
   "info": {
-    "title": "Gimnasio API",
+    "title": "Gimnasio API CRUD",
     "version": "1.0.0",
-    "description": "API CRUD para gimnasio con PHP, PostgreSQL y Liquibase. 30 endpoints: 5 entidades x 6 operaciones."
+    "description": "API REST para administrar un gimnasio. Incluye 30 endpoints: 5 entidades x 6 operaciones CRUD: crear, listar, consultar por ID, actualizar, eliminar y filtrar."
   },
   "servers": [
     {
-      "url": "http://localhost:8080"
+      "url": "http://localhost:8080",
+      "description": "Backend local con Docker"
+    }
+  ],
+  "tags": [
+    {
+      "name": "Entrenadores",
+      "description": "Operaciones CRUD de entrenadores"
+    },
+    {
+      "name": "Planes",
+      "description": "Operaciones CRUD de planes"
+    },
+    {
+      "name": "Miembros",
+      "description": "Operaciones CRUD de miembros"
+    },
+    {
+      "name": "Clases",
+      "description": "Operaciones CRUD de clases"
+    },
+    {
+      "name": "Reservas",
+      "description": "Operaciones CRUD de reservas"
     }
   ],
   "paths": {
     "/api/entrenadores": {
       "get": {
+        "tags": [
+          "Entrenadores"
+        ],
         "summary": "Listar entrenadores",
+        "description": "Retorna todos los registros de entrenadores.",
         "responses": {
           "200": {
-            "description": "OK"
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Entrenador"
+                  }
+                }
+              }
+            }
           }
         }
       },
       "post": {
+        "tags": [
+          "Entrenadores"
+        ],
         "summary": "Crear entrenadores",
+        "description": "Crea un nuevo registro en entrenadores.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/EntrenadorInput"
+              }
+            }
+          }
+        },
         "responses": {
           "201": {
-            "description": "Creado"
+            "description": "Creado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Entrenador"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Error de validación o base de datos",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Datos inválidos",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
           }
         }
       }
     },
     "/api/entrenadores/filter": {
       "get": {
+        "tags": [
+          "Entrenadores"
+        ],
         "summary": "Filtrar entrenadores",
+        "description": "Filtra registros de entrenadores. Puedes usar search o campos específicos.",
         "parameters": [
           {
             "name": "search",
             "in": "query",
+            "required": false,
             "schema": {
               "type": "string"
-            }
+            },
+            "description": "Texto de búsqueda"
+          },
+          {
+            "name": "nombre",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Filtro por nombre"
+          },
+          {
+            "name": "especialidad",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Filtro por especialidad"
+          },
+          {
+            "name": "email",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Filtro por email"
           }
         ],
         "responses": {
           "200": {
-            "description": "OK"
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Entrenador"
+                  }
+                }
+              }
+            }
           }
         }
       }
     },
     "/api/entrenadores/{id}": {
       "get": {
+        "tags": [
+          "Entrenadores"
+        ],
         "summary": "Consultar por ID entrenadores",
+        "description": "Consulta un registro de entrenadores por su ID.",
         "parameters": [
           {
             "name": "id",
@@ -58,17 +183,39 @@
             "required": true,
             "schema": {
               "type": "integer"
-            }
+            },
+            "description": "ID del registro en entrenadores"
           }
         ],
         "responses": {
           "200": {
-            "description": "OK"
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Entrenador"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "No encontrado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
           }
         }
       },
       "put": {
+        "tags": [
+          "Entrenadores"
+        ],
         "summary": "Actualizar entrenadores",
+        "description": "Actualiza un registro existente de entrenadores.",
         "parameters": [
           {
             "name": "id",
@@ -76,17 +223,59 @@
             "required": true,
             "schema": {
               "type": "integer"
-            }
+            },
+            "description": "ID del registro en entrenadores"
           }
         ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/EntrenadorInput"
+              }
+            }
+          }
+        },
         "responses": {
           "200": {
-            "description": "Actualizado"
+            "description": "Actualizado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Entrenador"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Error de validación o base de datos",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "No encontrado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
           }
         }
       },
       "delete": {
+        "tags": [
+          "Entrenadores"
+        ],
         "summary": "Eliminar entrenadores",
+        "description": "Elimina un registro de entrenadores por su ID.",
         "parameters": [
           {
             "name": "id",
@@ -94,56 +283,183 @@
             "required": true,
             "schema": {
               "type": "integer"
-            }
+            },
+            "description": "ID del registro en entrenadores"
           }
         ],
         "responses": {
           "200": {
-            "description": "Eliminado"
+            "description": "Eliminado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Registro eliminado correctamente"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "No se pudo eliminar",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "No encontrado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
           }
         }
       }
     },
     "/api/planes": {
       "get": {
+        "tags": [
+          "Planes"
+        ],
         "summary": "Listar planes",
+        "description": "Retorna todos los registros de planes.",
         "responses": {
           "200": {
-            "description": "OK"
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Plan"
+                  }
+                }
+              }
+            }
           }
         }
       },
       "post": {
+        "tags": [
+          "Planes"
+        ],
         "summary": "Crear planes",
+        "description": "Crea un nuevo registro en planes.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PlanInput"
+              }
+            }
+          }
+        },
         "responses": {
           "201": {
-            "description": "Creado"
+            "description": "Creado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Plan"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Error de validación o base de datos",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Datos inválidos",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
           }
         }
       }
     },
     "/api/planes/filter": {
       "get": {
+        "tags": [
+          "Planes"
+        ],
         "summary": "Filtrar planes",
+        "description": "Filtra registros de planes. Puedes usar search o campos específicos.",
         "parameters": [
           {
             "name": "search",
             "in": "query",
+            "required": false,
             "schema": {
               "type": "string"
-            }
+            },
+            "description": "Texto de búsqueda"
+          },
+          {
+            "name": "nombre",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Filtro por nombre"
+          },
+          {
+            "name": "descripcion",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Filtro por descripcion"
           }
         ],
         "responses": {
           "200": {
-            "description": "OK"
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Plan"
+                  }
+                }
+              }
+            }
           }
         }
       }
     },
     "/api/planes/{id}": {
       "get": {
+        "tags": [
+          "Planes"
+        ],
         "summary": "Consultar por ID planes",
+        "description": "Consulta un registro de planes por su ID.",
         "parameters": [
           {
             "name": "id",
@@ -151,17 +467,39 @@
             "required": true,
             "schema": {
               "type": "integer"
-            }
+            },
+            "description": "ID del registro en planes"
           }
         ],
         "responses": {
           "200": {
-            "description": "OK"
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Plan"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "No encontrado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
           }
         }
       },
       "put": {
+        "tags": [
+          "Planes"
+        ],
         "summary": "Actualizar planes",
+        "description": "Actualiza un registro existente de planes.",
         "parameters": [
           {
             "name": "id",
@@ -169,17 +507,59 @@
             "required": true,
             "schema": {
               "type": "integer"
-            }
+            },
+            "description": "ID del registro en planes"
           }
         ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PlanInput"
+              }
+            }
+          }
+        },
         "responses": {
           "200": {
-            "description": "Actualizado"
+            "description": "Actualizado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Plan"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Error de validación o base de datos",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "No encontrado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
           }
         }
       },
       "delete": {
+        "tags": [
+          "Planes"
+        ],
         "summary": "Eliminar planes",
+        "description": "Elimina un registro de planes por su ID.",
         "parameters": [
           {
             "name": "id",
@@ -187,56 +567,192 @@
             "required": true,
             "schema": {
               "type": "integer"
-            }
+            },
+            "description": "ID del registro en planes"
           }
         ],
         "responses": {
           "200": {
-            "description": "Eliminado"
+            "description": "Eliminado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Registro eliminado correctamente"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "No se pudo eliminar",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "No encontrado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
           }
         }
       }
     },
     "/api/miembros": {
       "get": {
+        "tags": [
+          "Miembros"
+        ],
         "summary": "Listar miembros",
+        "description": "Retorna todos los registros de miembros.",
         "responses": {
           "200": {
-            "description": "OK"
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Miembro"
+                  }
+                }
+              }
+            }
           }
         }
       },
       "post": {
+        "tags": [
+          "Miembros"
+        ],
         "summary": "Crear miembros",
+        "description": "Crea un nuevo registro en miembros.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MiembroInput"
+              }
+            }
+          }
+        },
         "responses": {
           "201": {
-            "description": "Creado"
+            "description": "Creado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Miembro"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Error de validación o base de datos",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Datos inválidos",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
           }
         }
       }
     },
     "/api/miembros/filter": {
       "get": {
+        "tags": [
+          "Miembros"
+        ],
         "summary": "Filtrar miembros",
+        "description": "Filtra registros de miembros. Puedes usar search o campos específicos.",
         "parameters": [
           {
             "name": "search",
             "in": "query",
+            "required": false,
             "schema": {
               "type": "string"
-            }
+            },
+            "description": "Texto de búsqueda"
+          },
+          {
+            "name": "nombre",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Filtro por nombre"
+          },
+          {
+            "name": "email",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Filtro por email"
+          },
+          {
+            "name": "estado",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Filtro por estado"
           }
         ],
         "responses": {
           "200": {
-            "description": "OK"
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Miembro"
+                  }
+                }
+              }
+            }
           }
         }
       }
     },
     "/api/miembros/{id}": {
       "get": {
+        "tags": [
+          "Miembros"
+        ],
         "summary": "Consultar por ID miembros",
+        "description": "Consulta un registro de miembros por su ID.",
         "parameters": [
           {
             "name": "id",
@@ -244,17 +760,39 @@
             "required": true,
             "schema": {
               "type": "integer"
-            }
+            },
+            "description": "ID del registro en miembros"
           }
         ],
         "responses": {
           "200": {
-            "description": "OK"
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Miembro"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "No encontrado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
           }
         }
       },
       "put": {
+        "tags": [
+          "Miembros"
+        ],
         "summary": "Actualizar miembros",
+        "description": "Actualiza un registro existente de miembros.",
         "parameters": [
           {
             "name": "id",
@@ -262,17 +800,59 @@
             "required": true,
             "schema": {
               "type": "integer"
-            }
+            },
+            "description": "ID del registro en miembros"
           }
         ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MiembroInput"
+              }
+            }
+          }
+        },
         "responses": {
           "200": {
-            "description": "Actualizado"
+            "description": "Actualizado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Miembro"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Error de validación o base de datos",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "No encontrado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
           }
         }
       },
       "delete": {
+        "tags": [
+          "Miembros"
+        ],
         "summary": "Eliminar miembros",
+        "description": "Elimina un registro de miembros por su ID.",
         "parameters": [
           {
             "name": "id",
@@ -280,56 +860,183 @@
             "required": true,
             "schema": {
               "type": "integer"
-            }
+            },
+            "description": "ID del registro en miembros"
           }
         ],
         "responses": {
           "200": {
-            "description": "Eliminado"
+            "description": "Eliminado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Registro eliminado correctamente"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "No se pudo eliminar",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "No encontrado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
           }
         }
       }
     },
     "/api/clases": {
       "get": {
+        "tags": [
+          "Clases"
+        ],
         "summary": "Listar clases",
+        "description": "Retorna todos los registros de clases.",
         "responses": {
           "200": {
-            "description": "OK"
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Clase"
+                  }
+                }
+              }
+            }
           }
         }
       },
       "post": {
+        "tags": [
+          "Clases"
+        ],
         "summary": "Crear clases",
+        "description": "Crea un nuevo registro en clases.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ClaseInput"
+              }
+            }
+          }
+        },
         "responses": {
           "201": {
-            "description": "Creado"
+            "description": "Creado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Clase"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Error de validación o base de datos",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Datos inválidos",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
           }
         }
       }
     },
     "/api/clases/filter": {
       "get": {
+        "tags": [
+          "Clases"
+        ],
         "summary": "Filtrar clases",
+        "description": "Filtra registros de clases. Puedes usar search o campos específicos.",
         "parameters": [
           {
             "name": "search",
             "in": "query",
+            "required": false,
             "schema": {
               "type": "string"
-            }
+            },
+            "description": "Texto de búsqueda"
+          },
+          {
+            "name": "nombre",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Filtro por nombre"
+          },
+          {
+            "name": "descripcion",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Filtro por descripcion"
           }
         ],
         "responses": {
           "200": {
-            "description": "OK"
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Clase"
+                  }
+                }
+              }
+            }
           }
         }
       }
     },
     "/api/clases/{id}": {
       "get": {
+        "tags": [
+          "Clases"
+        ],
         "summary": "Consultar por ID clases",
+        "description": "Consulta un registro de clases por su ID.",
         "parameters": [
           {
             "name": "id",
@@ -337,17 +1044,39 @@
             "required": true,
             "schema": {
               "type": "integer"
-            }
+            },
+            "description": "ID del registro en clases"
           }
         ],
         "responses": {
           "200": {
-            "description": "OK"
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Clase"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "No encontrado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
           }
         }
       },
       "put": {
+        "tags": [
+          "Clases"
+        ],
         "summary": "Actualizar clases",
+        "description": "Actualiza un registro existente de clases.",
         "parameters": [
           {
             "name": "id",
@@ -355,17 +1084,59 @@
             "required": true,
             "schema": {
               "type": "integer"
-            }
+            },
+            "description": "ID del registro en clases"
           }
         ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ClaseInput"
+              }
+            }
+          }
+        },
         "responses": {
           "200": {
-            "description": "Actualizado"
+            "description": "Actualizado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Clase"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Error de validación o base de datos",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "No encontrado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
           }
         }
       },
       "delete": {
+        "tags": [
+          "Clases"
+        ],
         "summary": "Eliminar clases",
+        "description": "Elimina un registro de clases por su ID.",
         "parameters": [
           {
             "name": "id",
@@ -373,56 +1144,192 @@
             "required": true,
             "schema": {
               "type": "integer"
-            }
+            },
+            "description": "ID del registro en clases"
           }
         ],
         "responses": {
           "200": {
-            "description": "Eliminado"
+            "description": "Eliminado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Registro eliminado correctamente"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "No se pudo eliminar",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "No encontrado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
           }
         }
       }
     },
     "/api/reservas": {
       "get": {
+        "tags": [
+          "Reservas"
+        ],
         "summary": "Listar reservas",
+        "description": "Retorna todos los registros de reservas.",
         "responses": {
           "200": {
-            "description": "OK"
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Reserva"
+                  }
+                }
+              }
+            }
           }
         }
       },
       "post": {
+        "tags": [
+          "Reservas"
+        ],
         "summary": "Crear reservas",
+        "description": "Crea un nuevo registro en reservas.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ReservaInput"
+              }
+            }
+          }
+        },
         "responses": {
           "201": {
-            "description": "Creado"
+            "description": "Creado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Reserva"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Error de validación o base de datos",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Datos inválidos",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
           }
         }
       }
     },
     "/api/reservas/filter": {
       "get": {
+        "tags": [
+          "Reservas"
+        ],
         "summary": "Filtrar reservas",
+        "description": "Filtra registros de reservas. Puedes usar search o campos específicos.",
         "parameters": [
           {
             "name": "search",
             "in": "query",
+            "required": false,
             "schema": {
               "type": "string"
-            }
+            },
+            "description": "Texto de búsqueda"
+          },
+          {
+            "name": "miembro_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Filtro por miembro_id"
+          },
+          {
+            "name": "clase_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Filtro por clase_id"
+          },
+          {
+            "name": "estado",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Filtro por estado"
           }
         ],
         "responses": {
           "200": {
-            "description": "OK"
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Reserva"
+                  }
+                }
+              }
+            }
           }
         }
       }
     },
     "/api/reservas/{id}": {
       "get": {
+        "tags": [
+          "Reservas"
+        ],
         "summary": "Consultar por ID reservas",
+        "description": "Consulta un registro de reservas por su ID.",
         "parameters": [
           {
             "name": "id",
@@ -430,17 +1337,39 @@
             "required": true,
             "schema": {
               "type": "integer"
-            }
+            },
+            "description": "ID del registro en reservas"
           }
         ],
         "responses": {
           "200": {
-            "description": "OK"
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Reserva"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "No encontrado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
           }
         }
       },
       "put": {
+        "tags": [
+          "Reservas"
+        ],
         "summary": "Actualizar reservas",
+        "description": "Actualiza un registro existente de reservas.",
         "parameters": [
           {
             "name": "id",
@@ -448,17 +1377,59 @@
             "required": true,
             "schema": {
               "type": "integer"
-            }
+            },
+            "description": "ID del registro en reservas"
           }
         ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ReservaInput"
+              }
+            }
+          }
+        },
         "responses": {
           "200": {
-            "description": "Actualizado"
+            "description": "Actualizado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Reserva"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Error de validación o base de datos",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "No encontrado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
           }
         }
       },
       "delete": {
+        "tags": [
+          "Reservas"
+        ],
         "summary": "Eliminar reservas",
+        "description": "Elimina un registro de reservas por su ID.",
         "parameters": [
           {
             "name": "id",
@@ -466,12 +1437,363 @@
             "required": true,
             "schema": {
               "type": "integer"
-            }
+            },
+            "description": "ID del registro en reservas"
           }
         ],
         "responses": {
           "200": {
-            "description": "Eliminado"
+            "description": "Eliminado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Registro eliminado correctamente"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "No se pudo eliminar",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "No encontrado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "EntrenadorInput": {
+        "type": "object",
+        "required": [
+          "nombre",
+          "especialidad",
+          "email",
+          "telefono",
+          "activo"
+        ],
+        "properties": {
+          "nombre": {
+            "type": "string",
+            "example": "Laura Méndez"
+          },
+          "especialidad": {
+            "type": "string",
+            "example": "Funcional"
+          },
+          "email": {
+            "type": "string",
+            "format": "email",
+            "example": "laura@gimnasio.com"
+          },
+          "telefono": {
+            "type": "string",
+            "example": "3001234567"
+          },
+          "activo": {
+            "type": "boolean",
+            "example": true
+          }
+        }
+      },
+      "Entrenador": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/EntrenadorInput"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "integer",
+                "example": 1
+              },
+              "created_at": {
+                "type": "string",
+                "example": "2026-04-28 04:45:41"
+              },
+              "updated_at": {
+                "type": "string",
+                "example": "2026-04-28 04:45:41"
+              }
+            }
+          }
+        ]
+      },
+      "PlanInput": {
+        "type": "object",
+        "required": [
+          "nombre",
+          "descripcion",
+          "precio_mensual",
+          "duracion_dias",
+          "activo"
+        ],
+        "properties": {
+          "nombre": {
+            "type": "string",
+            "example": "Plan Premium"
+          },
+          "descripcion": {
+            "type": "string",
+            "example": "Acceso completo al gimnasio y clases grupales"
+          },
+          "precio_mensual": {
+            "type": "number",
+            "format": "float",
+            "example": 120000
+          },
+          "duracion_dias": {
+            "type": "integer",
+            "example": 30
+          },
+          "activo": {
+            "type": "boolean",
+            "example": true
+          }
+        }
+      },
+      "Plan": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/PlanInput"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "integer",
+                "example": 1
+              },
+              "created_at": {
+                "type": "string",
+                "example": "2026-04-28 04:45:41"
+              },
+              "updated_at": {
+                "type": "string",
+                "example": "2026-04-28 04:45:41"
+              }
+            }
+          }
+        ]
+      },
+      "MiembroInput": {
+        "type": "object",
+        "required": [
+          "plan_id",
+          "nombre",
+          "email",
+          "telefono",
+          "fecha_inscripcion",
+          "estado"
+        ],
+        "properties": {
+          "plan_id": {
+            "type": "integer",
+            "example": 1
+          },
+          "nombre": {
+            "type": "string",
+            "example": "Carlos Ramírez"
+          },
+          "email": {
+            "type": "string",
+            "format": "email",
+            "example": "carlos@example.com"
+          },
+          "telefono": {
+            "type": "string",
+            "example": "3107654321"
+          },
+          "fecha_inscripcion": {
+            "type": "string",
+            "format": "date",
+            "example": "2026-04-28"
+          },
+          "estado": {
+            "type": "string",
+            "example": "activo",
+            "enum": [
+              "activo",
+              "inactivo",
+              "suspendido"
+            ]
+          }
+        }
+      },
+      "Miembro": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/MiembroInput"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "integer",
+                "example": 1
+              },
+              "created_at": {
+                "type": "string",
+                "example": "2026-04-28 04:45:41"
+              },
+              "updated_at": {
+                "type": "string",
+                "example": "2026-04-28 04:45:41"
+              }
+            }
+          }
+        ]
+      },
+      "ClaseInput": {
+        "type": "object",
+        "required": [
+          "entrenador_id",
+          "nombre",
+          "descripcion",
+          "cupo_maximo",
+          "horario",
+          "activo"
+        ],
+        "properties": {
+          "entrenador_id": {
+            "type": "integer",
+            "example": 1
+          },
+          "nombre": {
+            "type": "string",
+            "example": "Spinning avanzado"
+          },
+          "descripcion": {
+            "type": "string",
+            "example": "Clase cardiovascular de alta intensidad"
+          },
+          "cupo_maximo": {
+            "type": "integer",
+            "example": 20
+          },
+          "horario": {
+            "type": "string",
+            "example": "Lunes y miércoles 18:00"
+          },
+          "activo": {
+            "type": "boolean",
+            "example": true
+          }
+        }
+      },
+      "Clase": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/ClaseInput"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "integer",
+                "example": 1
+              },
+              "created_at": {
+                "type": "string",
+                "example": "2026-04-28 04:45:41"
+              },
+              "updated_at": {
+                "type": "string",
+                "example": "2026-04-28 04:45:41"
+              }
+            }
+          }
+        ]
+      },
+      "ReservaInput": {
+        "type": "object",
+        "required": [
+          "miembro_id",
+          "clase_id",
+          "fecha_reserva",
+          "estado"
+        ],
+        "properties": {
+          "miembro_id": {
+            "type": "integer",
+            "example": 1
+          },
+          "clase_id": {
+            "type": "integer",
+            "example": 1
+          },
+          "fecha_reserva": {
+            "type": "string",
+            "format": "date-time",
+            "example": "2026-04-28 18:00:00"
+          },
+          "estado": {
+            "type": "string",
+            "example": "confirmada",
+            "enum": [
+              "confirmada",
+              "cancelada",
+              "pendiente"
+            ]
+          }
+        }
+      },
+      "Reserva": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/ReservaInput"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "integer",
+                "example": 1
+              },
+              "created_at": {
+                "type": "string",
+                "example": "2026-04-28 04:45:41"
+              },
+              "updated_at": {
+                "type": "string",
+                "example": "2026-04-28 04:45:41"
+              }
+            }
+          }
+        ]
+      },
+      "Error": {
+        "type": "object",
+        "properties": {
+          "error": {
+            "type": "string",
+            "example": "Registro no encontrado"
+          },
+          "detail": {
+            "type": "string",
+            "example": "Detalle técnico del error"
           }
         }
       }
